@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String?
+  email        String        @unique
+  password     String
+  createdAt    DateTime
+  surfer       Surfer?
+  photographer Photographer?
+}
+
+model Surfer {
+  id           Int           @id @default(autoincrement())
+  userId       Int           @unique
+  user         User          @relation(fields: [userId], references: [id])
+  surfSessions SurfSession[]
+}
+
+model Photographer {
+  id            Int            @id @default(autoincrement())
+  userId        Int            @unique
+  user          User           @relation(fields: [userId], references: [id])
+  photoSessions PhotoSession[]
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  startDate DateTime
+  endDate   DateTime
+  // TODO: improve location
+  location  String
+}
+
+model PhotoSession {
+  id             Int          @id @default(autoincrement())
+  photographerId Int          @unique
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  Photo          Photo[]
+}
+
+model SurfSession {
+  id       Int    @id @default(autoincrement())
+  surferId Int
+  surfer   Surfer @relation(fields: [surferId], references: [id])
+}
+
+model Photo {
+  id             Int          @id @default(autoincrement())
+  fullResUrl     String
+  thumbnail      String
+  photoSessionId Int
+  photoSession   PhotoSession @relation(fields: [photoSessionId], references: [id])
+}
