@@ -32,24 +32,30 @@ model Photographer {
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
-  startDate DateTime
-  endDate   DateTime
+  id            Int            @id @default(autoincrement())
+  startDate     DateTime
+  endDate       DateTime
   // TODO: improve location
-  location  String
+  location      String
+  surfSessions  SurfSession[]
+  photoSessions PhotoSession[]
+}
+
+model SurfSession {
+  id        Int      @id @default(autoincrement())
+  surferId  Int      @unique
+  surfer    Surfer   @relation(fields: [surferId], references: [id])
+  session   Session? @relation(fields: [sessionId], references: [id])
+  sessionId Int      @unique
 }
 
 model PhotoSession {
   id             Int          @id @default(autoincrement())
   photographerId Int          @unique
   photographer   Photographer @relation(fields: [photographerId], references: [id])
-  Photo          Photo[]
-}
-
-model SurfSession {
-  id       Int    @id @default(autoincrement())
-  surferId Int
-  surfer   Surfer @relation(fields: [surferId], references: [id])
+  photo          Photo[]
+  session        Session?     @relation(fields: [sessionId], references: [id])
+  sessionId      Int          @unique
 }
 
 model Photo {
